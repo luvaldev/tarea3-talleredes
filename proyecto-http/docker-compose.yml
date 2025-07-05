@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  servidor:
+    image: httpd:latest
+    container_name: apache_server
+    ports:
+      - "8080:80"
+    networks:
+      - red_http
+    volumes:
+      - ./html:/usr/local/apache2/htdocs/
+
+  cliente:
+    build: ./cliente
+    container_name: cliente_http
+    depends_on:
+      - servidor
+    networks:
+      - red_http
+
+  scapy:
+    build: ./scapy
+    container_name: scapy_sniffer
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    privileged: true
+
+
+networks:
+  red_http:
+    driver: bridge
